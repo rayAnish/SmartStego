@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartStego - Secure Image Steganography</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .card {
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            background: rgba(255,255,255,0.95);
+        }
+        .btn-custom {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 50px;
+            color: white;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            padding: 12px 30px;
+        }
+        .btn-custom:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            color: white;
+        }
+        .navbar {
+            background: rgba(255,255,255,0.1) !important;
+            backdrop-filter: blur(10px);
+        }
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.8rem;
+        }
+        .hero-section {
+            padding: 100px 0;
+            text-align: center;
+            color: white;
+        }
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .hero-subtitle {
+            font-size: 1.3rem;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+        .feature-card {
+            text-align: center;
+            padding: 30px;
+            margin: 20px 0;
+            transition: transform 0.3s ease;
+        }
+        .feature-card:hover {
+            transform: translateY(-10px);
+        }
+        .feature-icon {
+            font-size: 3rem;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+        .stats-section {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            padding: 50px 0;
+            margin: 50px 0;
+            border-radius: 20px;
+        }
+        .stat-item {
+            text-align: center;
+            color: white;
+        }
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+        }
+        .footer {
+            background: rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 30px 0;
+            margin-top: 50px;
+        }
+        .security-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            margin: 5px;
+            color: white;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+        <a class="navbar-brand" href="/">
+            <i class="fas fa-shield-alt me-2"></i>SmartStego
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link active" href="/">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/image">Steganography</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <h1 class="hero-title">SmartStego</h1>
+                <p class="hero-subtitle">
+                    Secure Image Steganography with Advanced Encryption
+                </p>
+                <p class="lead mb-4">
+                    Hide your secret messages inside images with military-grade AES encryption.
+                    Your secrets are safe, invisible, and accessible only to you.
+                </p>
+
+                <div class="mb-4">
+                    <span class="security-badge"><i class="fas fa-lock me-1"></i>AES-256 Encrypted</span>
+                    <span class="security-badge"><i class="fas fa-eye-slash me-1"></i>LSB Steganography</span>
+                    <span class="security-badge"><i class="fas fa-shield-alt me-1"></i>Zero-Knowledge</span>
+                </div>
+
+                <a href="/image" class="btn btn-custom btn-lg">
+                    <i class="fas fa-magic me-2"></i>Start Hiding Messages
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<div class="container">
+    <div class="stats-section">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="stat-item">
+                    <div class="stat-number">256-bit</div>
+                    <div>AES Encryption</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-item">
+                    <div class="stat-number">LSB</div>
+                    <div>Steganography Method</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-item">
+                    <div class="stat-number">100%</div>
+                    <div>Privacy Protected</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="container py-5">
+    <div class="row justify-content-center mb-5">
+        <div class="col-lg-8 text-center text-white">
+            <h2 class="display-5 fw-bold mb-3">Why Choose SmartStego?</h2>
+            <p class="lead">Advanced steganography technology meets user-friendly design</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="card feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-lock"></i>
+                </div>
+                <h4>Military-Grade Security</h4>
+                <p>Your messages are encrypted with AES-256 before being hidden in images. Even if someone suspects steganography, they can't read your message without the password.</p>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-eye-slash"></i>
+                </div>
+                <h4>Invisible Integration</h4>
+                <p>Using LSB (Least Significant Bit) technique, your messages are hidden in the image pixels without any visible changes to the human eye.</p>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <h4>Lightning Fast</h4>
+                <p>Process images and hide/extract messages in seconds. Our optimized algorithms ensure quick processing without compromising security.</p>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-upload"></i>
+                </div>
+                <h4>Multiple Formats</h4>
+                <p>Support for PNG, JPEG, and JPG formats. Automatic capacity calculation to ensure your message fits perfectly in the selected image.</p>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h4>Zero Knowledge</h4>
+                <p>We never store your images or messages. Everything is processed locally in your browser session for maximum privacy and security.</p>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-mobile-alt"></i>
+                </div>
+                <h4>Cross-Platform</h4>
+                <p>Works on desktop, tablet, and mobile devices. Responsive design ensures a seamless experience across all your devices.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- How it Works Section -->
+<div class="container py-5">
+    <div class="row justify-content-center mb-5">
+        <div class="col-lg-8 text-center text-white">
+            <h2 class="display-5 fw-bold mb-3">How It Works</h2>
+            <p class="lead">Simple 3-step process to secure your messages</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="card text-center p-4">
+                <div class="feature-icon">
+                    <i class="fas fa-upload"></i>
+                </div>
+                <h5>1. Upload Image</h5>
+                <p>Select any PNG, JPEG, or JPG image. The system will automatically calculate how much text can be hidden in your image.</p>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card text-center p-4">
+                <div class="feature-icon">
+                    <i class="fas fa-key"></i>
+                </div>
+                <h5>2. Enter Message & Password</h5>
+                <p>Type your secret message and create a strong password. The message is encrypted before being hidden in the image.</p>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card text-center p-4">
+                <div class="feature-icon">
+                    <i class="fas fa-download"></i>
+                </div>
+                <h5>3. Download Stego Image</h5>
+                <p>Download your image with the hidden message. Share it safely - only those with the password can extract your message.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center mt-4">
+        <a href="/image" class="btn btn-custom btn-lg">
+            <i class="fas fa-play me-2"></i>Try It Now
+        </a>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <h5><i class="fas fa-shield-alt me-2"></i>SmartStego</h5>
+                <p>Secure image steganography for everyone. Protect your privacy with advanced encryption and invisible message hiding.</p>
+            </div>
+            <div class="col-md-6">
+                <h5>Security Features</h5>
+                <ul class="list-unstyled">
+                    <li><i class="fas fa-check me-2"></i>AES-256 Encryption</li>
+                    <li><i class="fas fa-check me-2"></i>LSB Steganography</li>
+                    <li><i class="fas fa-check me-2"></i>Zero Data Storage</li>
+                    <li><i class="fas fa-check me-2"></i>Client-Side Processing</li>
+                </ul>
+            </div>
+        </div>
+        <hr class="my-4">
+        <div class="text-center">
+            <p>&copy; 2024 SmartStego. Built with Spring Boot & Security in mind.</p>
+        </div>
+    </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Add smooth scrolling and animations
+    document.addEventListener('DOMContentLoaded', function() {
+        // Animate feature cards on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe all feature cards
+        document.querySelectorAll('.feature-card').forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(30px)';
+            card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(card);
+        });
+    });
+</script>
+</body>
+</html>

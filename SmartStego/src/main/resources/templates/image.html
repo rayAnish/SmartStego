@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartStego - Image Steganography</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .card {
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            background: rgba(255,255,255,0.95);
+        }
+        .btn-custom {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 50px;
+            color: white;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .btn-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            color: white;
+        }
+        .navbar {
+            background: rgba(255,255,255,0.1) !important;
+            backdrop-filter: blur(10px);
+        }
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+        .alert {
+            border: none;
+            border-radius: 15px;
+        }
+        .progress {
+            height: 8px;
+            border-radius: 10px;
+        }
+        .image-preview {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .capacity-info {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px;
+            border-radius: 15px;
+            margin: 15px 0;
+        }
+        .loading-spinner {
+            display: none;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+        <a class="navbar-brand" href="/">
+            <i class="fas fa-shield-alt me-2"></i>SmartStego
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="/image">Steganography</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="text-center text-white mb-4">
+                <h2 class="fw-bold">Image Steganography</h2>
+                <p>Hide and extract secret messages in images</p>
+            </div>
+
+            <!-- Navigation Tabs -->
+            <ul class="nav nav-pills nav-justified mb-4" id="stegoTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active btn-custom" id="hide-tab" data-bs-toggle="pill"
+                            data-bs-target="#hide" type="button" role="tab">
+                        <i class="fas fa-eye-slash me-2"></i>Hide Message
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link btn-custom ms-2" id="extract-tab" data-bs-toggle="pill"
+                            data-bs-target="#extract" type="button" role="tab">
+                        <i class="fas fa-search me-2"></i>Extract Message
+                    </button>
+                </li>
+            </ul>
+
+            <!-- Tab Content -->
+            <div class="tab-content" id="stegoTabContent">
+                <!-- Hide Message Tab -->
+                <div class="tab-pane fade show active" id="hide" role="tabpanel">
+                    <div class="card p-4">
+                        <form id="hideForm" enctype="multipart/form-data">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="hideImage" class="form-label">
+                                            <i class="fas fa-image me-2"></i>Select Image
+                                        </label>
+                                        <input type="file" class="form-control" id="hideImage" name="image"
+                                               accept="image/*" required>
+                                        <div class="form-text">Supported formats: PNG, JPEG, JPG</div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="hideMessage" class="form-label">
+                                            <i class="fas fa-comment me-2"></i>Secret Message
+                                        </label>
+                                        <textarea class="form-control" id="hideMessage" name="message"
+                                                  rows="4" placeholder="Enter your secret message here..." required></textarea>
+                                        <div class="form-text">
+                                            <span id="messageLength">0</span> characters
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="hidePassword" class="form-label">
+                                            <i class="fas fa-key me-2"></i>Password
+                                        </label>
+                                        <input type="password" class="form-control" id="hidePassword"
+                                               name="password" placeholder="Enter password" required>
+                                        <div class="form-text">This password will be needed to extract the message</div>
+                                    </div>
+
+                                    <div id="hideCapacityInfo" class="capacity-info" style="display: none;">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span><i class="fas fa-info-circle me-2"></i>Image Capacity:</span>
+                                            <span id="hideCapacityValue">0 characters</span>
+                                        </div>
+                                    </div>
+
+                                    <button type="button" class="btn btn-custom w-100" id="hideBtn">
+                                        <i class="fas fa-magic me-2"></i>Hide Message
+                                        <span class="loading-spinner">
+                                            <i class="fas fa-spinner fa-spin"></i>
+                                        </span>
+                                    </button>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="text-center">
+                                        <div id="hideImagePreview" class="mb-3" style="display: none;">
+                                            <p class="fw-bold">Original Image:</p>
+                                            <img id="hidePreviewImg" class="image-preview" alt="Preview">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+
+                        <div id="hideResult" class="mt-4" style="display: none;">
+                            <div class="alert alert-success">
+                                <i class="fas fa-check-circle me-2"></i>
+                                Message hidden successfully! Click the button below to download your stego image.
+                            </div>
+                            <button type="button" class="btn btn-success" id="downloadBtn">
+                                <i class="fas fa-download me-2"></i>Download Stego Image
+                            </button>
+                        </div>
+
+                        <div id="hideError" class="mt-4" style="display: none;">
+                            <div class="alert alert-danger">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                <span id="hideErrorMessage"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Extract Message Tab -->
+                <div class="tab-pane fade" id="extract" role="tabpanel">
+                    <div class="card p-4">
+                        <form id="extractForm" enctype="multipart/form-data">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="extractImage" class="form-label">
+                                            <i class="fas fa-image me-2"></i>Select Stego Image
+                                        </label>
+                                        <input type="file" class="form-control" id="extractImage" name="image"
+                                               accept="image/*" required>
+                                        <div class="form-text">Select the image with hidden message</div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="extractPassword" class="form-label">
+                                            <i class="fas fa-key me-2"></i>Password
+                                        </label>
+                                        <input type="password" class="form-control" id="extractPassword"
+                                               name="password" placeholder="Enter password" required>
+                                        <div class="form-text">Enter the password used to hide the message</div>
+                                    </div>
+
+                                    <div id="extractCapacityInfo" class="capacity-info" style="display: none;">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <span><i class="fas fa-info-circle me-2"></i>Image Status:</span>
+                                            <span id="extractStatusValue">Checking...</span>
+                                        </div>
+                                    </div>
+
+                                    <button type="button" class="btn btn-custom w-100" id="extractBtn">
+                                        <i class="fas fa-unlock me-2"></i>Extract Message
+                                        <span class="loading-spinner">
+                                            <i class="fas fa-spinner fa-spin"></i>
+                                        </span>
+                                    </button>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="text-center">
+                                        <div id="extractImagePreview" class="mb-3" style="display: none;">
+                                            <p class="fw-bold">Selected Image:</p>
+                                            <img id="extractPreviewImg" class="image-preview" alt="Preview">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+
+                        <div id="extractResult" class="mt-4" style="display: none;">
+                            <div class="alert alert-success">
+                                <i class="fas fa-check-circle me-2"></i>
+                                Message extracted successfully!
+                            </div>
+                            <div class="card">
+                                <div class="card-header">
+                                    <i class="fas fa-comment me-2"></i>Extracted Message:
+                                </div>
+                                <div class="card-body">
+                                    <pre id="extractedMessage" class="mb-0"></pre>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="extractError" class="mt-4" style="display: none;">
+                            <div class="alert alert-danger">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                <span id="extractErrorMessage"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script>
+    let stegoImageBlob = null;
+
+    // Show/hide loading spinner for buttons
+    function showButtonLoading(buttonId, show = true) {
+        const btn = document.getElementById(buttonId);
+        const spinner = btn.querySelector('.loading-spinner');
+        const text = btn.querySelector('i:first-child');
+
+        if (show) {
+            btn.disabled = true;
+            spinner.style.display = 'inline';
+        } else {
+            btn.disabled = false;
+            spinner.style.display = 'none';
+        }
+    }
+
+    // Hide Message Form Handler
+    document.getElementById('hideImage').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            // Show image preview
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('hidePreviewImg').src = e.target.result;
+                document.getElementById('hideImagePreview').style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+
+            // Check image capacity
+            checkImageCapacity(file, 'hide');
+        }
+    });
+
+    // Extract Message Form Handler
+    document.getElementById('extractImage').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            // Show image preview
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('extractPreviewImg').src = e.target.result;
+                document.getElementById('extractImagePreview').style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+
+            // Check if image has hidden message
+            checkImageCapacity(file, 'extract');
+        }
+    });
+
+    // Message length counter
+    document.getElementById('hideMessage').addEventListener('input', function() {
+        document.getElementById('messageLength').textContent = this.value.length;
+    });
+
+    // Hide Message Button
+    document.getElementById('hideBtn').addEventListener('click', function() {
+        const form = document.getElementById('hideForm');
+        const formData = new FormData(form);
+
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+        }
+
+        showButtonLoading('hideBtn', true);
+
+        // Use AbortController for timeout handling
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+
+        fetch('/hide', {
+            method: 'POST',
+            body: formData,
+            signal: controller.signal
+        })
+        .then(response => {
+            clearTimeout(timeoutId);
+            showButtonLoading('hideBtn', false);
+
+            if (response.ok) {
+                return response.blob();
+            } else {
+                return response.text().then(text => {
+                    throw new Error(text);
+                });
+            }
+        })
+        .then(blob => {
+            stegoImageBlob = blob;
+            document.getElementById('hideResult').style.display = 'block';
+            document.getElementById('hideError').style.display = 'none';
+        })
+        .catch(error => {
+            clearTimeout(timeoutId);
+            showButtonLoading('hideBtn', false);
+            const errorMessage = error.name === 'AbortError' ? 'Request timed out. Please try again.' : error.message;
+            document.getElementById('hideErrorMessage').textContent = errorMessage;
+            document.getElementById('hideError').style.display = 'block';
+            document.getElementById('hideResult').style.display = 'none';
+        });
+    });
+
+    // Download Button
+    document.getElementById('downloadBtn').addEventListener('click', function() {
+        if (stegoImageBlob) {
+            const url = window.URL.createObjectURL(stegoImageBlob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'stego_image.png';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+    });
+
+    // Extract Message Button - Optimized for faster loading
+    document.getElementById('extractBtn').addEventListener('click', function() {
+        const form = document.getElementById('extractForm');
+        const formData = new FormData(form);
+
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+        }
+
+        showButtonLoading('extractBtn', true);
+
+        // Use AbortController for timeout handling with shorter timeout for extraction
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout for extraction
+
+        fetch('/extract', {
+            method: 'POST',
+            body: formData,
+            signal: controller.signal,
+            // Add cache control headers to ensure fresh requests
+            headers: {
+                'Cache-Control': 'no-cache',
+                'Pragma': 'no-cache'
+            }
+        })
+        .then(response => {
+            clearTimeout(timeoutId);
+            showButtonLoading('extractBtn', false);
+
+            // Handle response more efficiently
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                document.getElementById('extractedMessage').textContent = data.extractedMessage;
+                document.getElementById('extractResult').style.display = 'block';
+                document.getElementById('extractError').style.display = 'none';
+            } else {
+                document.getElementById('extractErrorMessage').textContent = data.message || 'Failed to extract message';
+                document.getElementById('extractError').style.display = 'block';
+                document.getElementById('extractResult').style.display = 'none';
+            }
+        })
+        .catch(error => {
+            clearTimeout(timeoutId);
+            showButtonLoading('extractBtn', false);
+            const errorMessage = error.name === 'AbortError' ?
+                'Extraction timed out. Please try again with a smaller image.' :
+                'Error: ' + error.message;
+            document.getElementById('extractErrorMessage').textContent = errorMessage;
+            document.getElementById('extractError').style.display = 'block';
+            document.getElementById('extractResult').style.display = 'none';
+        });
+    });
+
+    // Check Image Capacity Function - Optimized
+    function checkImageCapacity(file, type) {
+        const formData = new FormData();
+        formData.append('image', file);
+
+        // Use shorter timeout for capacity check
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
+        fetch('/check-capacity', {
+            method: 'POST',
+            body: formData,
+            signal: controller.signal
+        })
+        .then(response => {
+            clearTimeout(timeoutId);
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                if (type === 'hide') {
+                    document.getElementById('hideCapacityValue').textContent = data.capacity + ' characters';
+                    document.getElementById('hideCapacityInfo').style.display = 'block';
+                } else {
+                    const status = data.hasHiddenMessage ?
+                        '<span class="text-success">Has hidden message</span>' :
+                        '<span class="text-warning">No hidden message detected</span>';
+                    document.getElementById('extractStatusValue').innerHTML = status;
+                    document.getElementById('extractCapacityInfo').style.display = 'block';
+                }
+            }
+        })
+        .catch(error => {
+            clearTimeout(timeoutId);
+            if (error.name !== 'AbortError') {
+                console.error('Error checking capacity:', error);
+            }
+        });
+    }
+
+    // Reset forms when switching tabs
+    document.querySelectorAll('[data-bs-toggle="pill"]').forEach(tab => {
+        tab.addEventListener('shown.bs.tab', function() {
+            // Reset button states
+            showButtonLoading('hideBtn', false);
+            showButtonLoading('extractBtn', false);
+
+            // Reset forms and hide results
+            document.getElementById('hideResult').style.display = 'none';
+            document.getElementById('hideError').style.display = 'none';
+            document.getElementById('extractResult').style.display = 'none';
+            document.getElementById('extractError').style.display = 'none';
+            stegoImageBlob = null;
+        });
+    });
+
+    // Preload common resources for better performance
+    document.addEventListener('DOMContentLoaded', function() {
+        // Reset all button states on page load
+        showButtonLoading('hideBtn', false);
+        showButtonLoading('extractBtn', false);
+    });
+</script>
+</body>
+</html>
